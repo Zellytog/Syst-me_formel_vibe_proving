@@ -6,6 +6,8 @@ Bruijn typés, renommages, η-expansion, substitution héréditaire et
 substitution par des vecteurs. Il fournit aussi un σ-calcul à la Autosubst
 pour les égalités de substitutions.
 
+Dépôt : <https://github.com/Zellytog/Syst-me_formel_vibe_proving> (branche `main`).
+
 Toutes les preuves sont complètes : aucun `Admitted`, et **aucun axiome**,
 pas même l'extensionnalité fonctionnelle. Les vecteurs sont des objets finis
 (des listes d'arguments), donc deux vecteurs dont les composantes coïncident
