@@ -47,6 +47,11 @@ theories/SetTheory/IZFRecX.v
 theories/SetTheory/IZFRec.v
 theories/SetTheory/IZFeCC.v
 theories/SetTheory/IZFeDC.v
+theories/SetTheory/IZFChoice.v
+theories/SetTheory/IZFChoice2.v
+theories/SetTheory/IZFChoice3.v
+theories/SetTheory/IZFChoice4.v
+theories/SetTheory/IZFChoice5.v
 theories/Extensions/Conservativity.v
 theories/Extensions/RuleExt.v
 theories/Extensions/Interpretation.v
@@ -114,4 +119,5 @@ theories/VE/CC.v
 theories/VE/DC.v
 theories/VE/Sound.v
 theories/VE/MemSCA.v
+theories/VE/MemIZF.v
 theories/VE/PCAFix.v

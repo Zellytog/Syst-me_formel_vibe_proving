@@ -982,6 +982,7 @@ Qed.
 Corollary izfe_cc_consistent : ~ IZFeC [] [] (Bot (Γ := [])).
 Proof. intros Hd. destruct (ve_mem_cc _ Hd) as [e He]. exact (not_top_bot e He). Qed.
 
+
 End VMem.
 
 (** ** Le choix dépendant par mémoïsation récursive
@@ -1373,5 +1374,6 @@ Qed.
 (** Cohérence de IZFε + DC (relativement à [CC_N], [DC_N] et à la collection). *)
 Corollary izfe_dc_consistent : ~ IZFeD [] [] (Bot (Γ := [])).
 Proof. intros Hd. destruct (ve_mem_dc _ Hd) as [e He]. exact (not_top_bot e He). Qed.
+
 
 End VMemD.

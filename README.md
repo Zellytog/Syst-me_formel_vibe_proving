@@ -47,10 +47,11 @@ make
 
 **Temps de compilation.** La plupart des fichiers compilent en quelques
 secondes, mais `theories/SetTheory/` (IZFε et sa conservativité sur IZF)
-demande à lui seul **une quinzaine de minutes** sur une machine ordinaire
+demande à lui seul **une vingtaine de minutes** sur une machine ordinaire
 (compilation séquentielle) : `IZFSound.v`, `IZFSchema.v`, `IZFCons.v`,
 `IZFRepl.v`, `IZFRecW.v`, `IZFRecX.v` et `IZFRec.v` prennent chacun de une
-à trois minutes. Les dérivations y sont faites dans la syntaxe profonde,
+à trois minutes, et CC et DC dans IZF (`IZFChoice*.v`) environ quatre minutes
+de plus (`IZFChoice2.v` et `IZFChoice4.v` près de deux chacun). Les dérivations y sont faites dans la syntaxe profonde,
 et les vérifications de conversion entre instances des gros gabarits
 (celui de rec en particulier) sont coûteuses. `make -j` aide peu, la chaîne
 étant presque linéaire. Le modèle V(E) (`theories/VE/`) compile en une
@@ -145,6 +146,11 @@ dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Fun
 | `IZFRec.v` | **conservativité, étape 3 : IZFε tout entier est conservative sur IZF** (`izfe_sound`, `izfe_conservative`, `izfe_conservative_closed`, théorème 1.5.13). Dans l'axiome de rec, ψ est appliquée au terme rec(α) : on passe par une variante (`ArecV`) où ψ(rec α, β) devient ∃w. w = rec(α) ∧ ψ(w, β), qui entraîne l'axiome en logique pure (`rec_var`, avec `eqL` et la monotonie de ∃!, `exu_mono`) et dont la traduction est l'instance d'un gabarit de IZF (`sch_rec`, `tmpl_rec`). Aucun axiome |
 | `IZFeCC.v` | **IZFε + le choix dénombrable** (forme bornée) : le schéma `A_cc`, à paramètres X et φ, (∀n. n ε ω ⇒ ∃y. y ε X ∧ φ(n, y)) ⇒ ∃f. (∀n. n ε ω ⇒ ∃y. y ε X ∧ ⟨n, y⟩ ε f ∧ φ(n, y)) ∧ (f fonctionnelle) ∧ (f ⊆ ω × X) ; la théorie `RIZFeC` |
 | `IZFeDC.v` | **IZFε + le choix dépendant** (forme bornée) : le schéma `A_dc`, à paramètres X et φ, (∀x. x ε X ⇒ ∃y. y ε X ∧ φ(x, y)) ⇒ ∀x₀. x₀ ε X ⇒ ∃f. (∀n. n ε ω ⇒ ∃y. y ε X ∧ ⟨n, y⟩ ε f) ∧ (f fonctionnelle) ∧ (f ⊆ ω × X) ∧ ⟨∅, x₀⟩ ε f ∧ (∀n y y'. ⟨n, y⟩ ε f ⇒ ⟨S(n), y'⟩ ε f ⇒ φ(y, y')) ; la théorie `RIZFeD` |
+| `IZFChoice.v` | **outils pour CC et DC dans IZF** (dans IZF⁻ε) : appartenance à une paire (`pair_mem`), extensionnalité (`ext_mem`), singletons et paires définis par des formules (`sg_of_eqv`, `eqv_of_sg`, `pr_of_eqv`, `eqv_of_pr`) ; **le couple de Kuratowski défini par une formule** Op(p, a, b) (`OpF`), sa congruence pour ≃ (`op_congr`, par 1.5.8), le couple ⟨a, b⟩ en est un (`op_base`), **injectivité intuitionniste** (`op_inj1`, `op_inj2`) ; le successeur (`eps_suc`, `suc_mem`, `suc_eqv_inj`), **pas de 2-cycle pour ∈** (`nocycle`, par ε-induction) ; **sur ω, ≃ entraîne l'égalité de Leibniz** (`nat_leib`, par ε-induction) ; **ω défini par une formule**, Nat(w) := w est inductif et inclus dans tout inductif (`NatF`), ω est inductif (`ind_omega`), et Nat(w) donne w ⊆ ω (`nat_sub_omega`) et ω ⊆ w (`omega_sub_nat`, par ε-induction) |
+| `IZFChoice2.v` | **CC de IZF**, énoncé dans L_IZF (`IZF_cc` : ∀w. Nat(w) → ∀X. (∀n ∈ w ∃y ∈ X. φ(n, y)) → ∃f. totalité avec Op, fonctionnalité pour ≃, f ⊆ w × X) ; l'extensionnalité en le second argument (`ExtR2`) ; un élément de f est ≃ à un ⟨n₀, y₀⟩ ε f (`rep_l`) ; la totalité, le domaine et la fonctionnalité (`cc_tot_l`, `cc_sub_l`, `cc_fun_l`, ce dernier par `nat_leib`) à partir du schéma ε |
+| `IZFChoice3.v` | **IZFε + CC prouve le choix dénombrable de IZF** (`izf_cc`, puis `izf_cc_lizf` pour toute formule de L_IZF avec paramètres) ; `ExtR2` pour les formules de L_IZF (`extR2_inst`) |
+| `IZFChoice4.v` | **DC de IZF**, énoncé dans L_IZF (`IZF_dc` : départ ⟨∅, x₀⟩ ∈ f, pas Succ(m, n) ∧ ⟨n, y⟩ ∈ f ∧ ⟨m, y′⟩ ∈ f ⇒ φ(y, y′)) ; congruence de Succ (`succ_congr`) ; les composantes (`dchyp_l`, `dc_tot_l`, `dc_start_l`, `dc_step_l` : n₁ ≃ S(n₀) donne n₁ = S(n₀) par `nat_leib`) |
+| `IZFChoice5.v` | **IZFε + DC prouve le choix dépendant de IZF** (`izf_dc`, `izf_dc_lizf`) |
 
 ### `theories/Extensions/` : extensions et conservativité
 
@@ -254,6 +260,7 @@ ce qui évite toute extensionnalité fonctionnelle.
 | `Sound.v` | **V(E) ⊨ IZFε** (théorème 2.2.2, `ve_sound`) : règles logiques par `FrameTarski`, axiomes par `fax_sound` et la tactique `psolve` (valeur calculée ≡ forme propre, en ne réduisant la valeur que par unification de tête, pour que le noyau ne compare jamais de gros termes réduits) ; dans `prop_frame`, **IZFε est cohérente** relativement à la collection (`izfe_consistent`) ; si le cadre valide CC au niveau du tripos, **V(E) ⊨ IZFε + CC** (`ve_sound_cc`) ; de même pour DC (`ve_sound_dc`) |
 | `PCAFix.v` | **le point fixe dans toute PCA** : chaque expression de l'opérade a un point fixe (`pfix`, `pfix_spec`), le combinateur de Turing paresseux δδ avec δ := λw.λx. H (w w) x, où H calcule eeval en interne (`qexp`, `lq`) ; Φ = parties de A est petit (Φ₀ := A → Prop) ; d'où **V(A) ⊨ IZFε pour toute PCA sous la seule collection** (`ve_sound_pca`), et la réalisabilité de Kleene pour IZFε (`ve_sound_K1`) |
 | `MemSCA.v` | **le cadre Mem-SCA** (Cohen–Faro–Tate) : un langage de combinateurs catégoriques avec **non-déterminisme** (`cNd`), **état** (table d'allocation, table de mémoïsation) et **mémoïsation** (`cMemo`, `cLook ℓ`), sémantique à grands pas `ev`, terminaison sur toutes les branches `safe` (inductive), états atteignables `reach` ; propositions = prédicats stables par les futurs (extensions de l'état) ; le cadre `MF` ; ⊥ n'est pas réalisé (`progress`, `not_top_bot`) ; décodage déterministe des entiers ⌜t⌝ (`m_dec`) ; invariant de la table (`reach_inv` : toute entrée est un résultat effectif du générateur) ; **la mémoïsation réalise CC au niveau du tripos** (`m_memo`, `memo_cc : frame_cc MF cCC`), sous la seule hypothèse méta `CC_N` (choix sur les parties de ℕ), via un codage injectif des entrées dans ℕ (`enc_x_inj`, sans axiome) ; Φ₀ := état → code → Prop, point fixe `cFix` ; d'où **V(Mem) ⊨ IZFε + CC** (`ve_mem_cc`) et la cohérence de IZFε + CC (`izfe_cc_consistent`), relativement à `CC_N` et à la collection ; **le choix dépendant par mémoïsation récursive** (`cMemoR` : le générateur reçoit sa propre case ; `cCase` : analyse de cas sur un numéral) : spécification du générateur (`m_gen`), totalité de `cLook ℓ` par récurrence sur t (`look_tot`), la suite lue dans la table suit R (`Sd_step`), `memo_dc : frame_dc MF cDC` sous `CC_N` et `DC_N` (le choix dépendant méta), d'où **V(Mem) ⊨ IZFε + DC** (`ve_mem_dc`) et la cohérence de IZFε + DC (`izfe_dc_consistent`) |
+| `MemIZF.v` | **CC et DC de IZF dans V(Mem)** : pour toute formule de L_IZF, le choix dénombrable (`ve_mem_izf_cc`, sous `CC_N`) et le choix dépendant (`ve_mem_izf_dc`, sous `CC_N` et `DC_N`) de IZF, énoncés dans L_IZF, sont réalisés |
 
 ## Choix de conception
 
@@ -411,6 +418,20 @@ Les quatre instances sont prouvées **sans axiome** (`Print Assumptions`).
 - **Le reste en déduction.** L'extensionnalité et la description ne sont pas
   des équivalences entre une proposition atomique et sa définition ; elles
   restent des règles de déduction, à prémisses avec variable propre.
+
+- **CC et DC de IZF à partir des schémas ε.** Les schémas de
+  `IZFeCC.v` et `IZFeDC.v` parlent de ε, de l'égalité de Leibniz et des
+  termes ω et ⟨·,·⟩ ; ceux de IZF (`IZF_cc`, `IZF_dc`) sont des formules de
+  L_IZF, où ω est « le plus petit ensemble inductif » et les couples sont
+  définis par une formule de Kuratowski. Le passage de l'un à l'autre
+  représente chaque élément de IZF par un élément intensionnel (a ∈ x donne
+  a ≃ a′ ε x), et le seul point délicat est la fonctionnalité : un entier
+  n de IZF a plusieurs représentants n′ ε ω, alors que le schéma ε ne donne
+  l'unicité que pour un même représentant. Elle vient de ce que **sur ω,
+  ≃ entraîne l'égalité de Leibniz** (`nat_leib`) : par ε-induction, si
+  S(y) ≃ S(y′) alors y ≃ y′, le cas y ∈ y′ ∧ y′ ∈ y étant exclu par
+  l'absence de 2-cycle pour ∈. Pour DC, il donne aussi n₁ = S(n₀) dès que
+  n₁ ≃ S(n₀), ce qui ramène le pas de IZF (Succ(m, n)) au pas ε.
 
 ## Extensions (`Extensions/`)
 
@@ -737,7 +758,9 @@ Au niveau interne (`Eta.v`, `Composition.v`) : `subst_id`, `subst_subst`,
   (1,1) de l'exemple, HA_ω^{ω,ω} dans `HA/Model.v`, relativement à
   l'imprédicativité de `Prop`, IZFε dans `VE/Sound.v`, relativement en
   plus à la collection, et IZFε + CC, IZFε + DC dans `VE/MemSCA.v`,
-  relativement en plus au choix méta), aucun résultat de cohérence ou de
+  relativement en plus au choix méta ; d'où, par `IZFChoice3.v` et
+  `IZFChoice5.v`, des modèles de réalisabilité de IZF + CC et IZF + DC, au
+  sens où les axiomes de IZF lus dans L_IZF y sont réalisés), aucun résultat de cohérence ou de
   normalisation n'est prouvé. En particulier, rien n'est
   prouvé sur la terminaison des systèmes engendrés.
 - Pour HA, la famille de relativisation D est **définie** sur la signature
