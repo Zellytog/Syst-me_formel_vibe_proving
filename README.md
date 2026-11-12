@@ -54,7 +54,7 @@ demande à lui seul **une quinzaine de minutes** sur une machine ordinaire
 et les vérifications de conversion entre instances des gros gabarits
 (celui de rec en particulier) sont coûteuses. `make -j` aide peu, la chaîne
 étant presque linéaire. Le modèle V(E) (`theories/VE/`) compile en une
-vingtaine de secondes, dont une quinzaine pour `Sound.v`. Les extensions par définition
+cinquantaine de secondes, dont une quarantaine pour `Sound.v` (la vérification de la forme propre du schéma CC en prend la moitié). Les extensions par définition
 (`Extensions/Definitional.v` et `DefSound.v`) compilent en environ huit
 secondes (deux et six).
 
@@ -143,6 +143,7 @@ dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Fun
 | `IZFRepl.v` | **conservativité, étape 2** : IZF⁻ε plus les axiomes de IZFε autres que rec (remplacement, {α ε a ∣ φ} ε P(a), a ε P(x) → a ⊑ x), la théorie `RIZFr`, est conservative sur IZF (`izfr_sound`, `izfr_conservative`, `izfr_conservative_closed`) ; gabarits et preuves dans IZF pour le remplacement (`tmpl_repl`, qui utilise la construction totale) et la partie séparée (`tmpl_sp`), axiome clos des parties (`ax_power_sub0`). Aucun axiome |
 | `IZFRecX.v` | le graphe de rec lu sur un essai f défini en a, de valeur v : z ∈ v ↔ z ∈ rec(a) (`recv_iff`), w = rec(a) ↔ w = v (`eqr_iff`), β ε rec(a) ↔ β ∈ v (`epsr_iff`), et (∃w. w = rec(α) ∧ ψ(w, β)) ↔ R_f(α, β) (`chi_rf`) |
 | `IZFRec.v` | **conservativité, étape 3 : IZFε tout entier est conservative sur IZF** (`izfe_sound`, `izfe_conservative`, `izfe_conservative_closed`, théorème 1.5.13). Dans l'axiome de rec, ψ est appliquée au terme rec(α) : on passe par une variante (`ArecV`) où ψ(rec α, β) devient ∃w. w = rec(α) ∧ ψ(w, β), qui entraîne l'axiome en logique pure (`rec_var`, avec `eqL` et la monotonie de ∃!, `exu_mono`) et dont la traduction est l'instance d'un gabarit de IZF (`sch_rec`, `tmpl_rec`). Aucun axiome |
+| `IZFeCC.v` | **IZFε + le choix dénombrable** (forme bornée) : le schéma `A_cc`, à paramètres X et φ, (∀n. n ε ω ⇒ ∃y. y ε X ∧ φ(n, y)) ⇒ ∃f. (∀n. n ε ω ⇒ ∃y. y ε X ∧ ⟨n, y⟩ ε f ∧ φ(n, y)) ∧ (f fonctionnelle) ∧ (f ⊆ ω × X) ; la théorie `RIZFeC` |
 
 ### `theories/Extensions/` : extensions et conservativité
 
@@ -247,7 +248,8 @@ ce qui évite toute extensionnalité fonctionnelle.
 | `Coll.v` | la **collection** en hypothèse nommée (`coll`, propre, de spécification `coll_spec`, sur une famille indexée) ; l'ensemble de remplacement `vrepl`, `vrec` par récurrence sur la forme ; réalisateurs de la collection, du remplacement et de rec (`coll_real`, `W_to`, `W_from`) |
 | `Model.v` | l'interprétation des sortes (V ↦ `Vset`, Pr ↦ Φ) et des symboles de IZFε ; les lieurs reçoivent des morphismes de setoïdes (`b1`, `b2`) |
 | `Axioms.v` | chaque axiome de IZF⁻ε et de IZFε, sous forme sémantique « propre », est réalisé uniformément (`R_mem`, …, `R_rec`, `R_power_sub`) |
-| `Sound.v` | **V(E) ⊨ IZFε** (théorème 2.2.2, `ve_sound`) : règles logiques par `FrameTarski`, axiomes par `fax_sound` et la tactique `psolve` (valeur calculée ≡ forme propre, en ne réduisant la valeur que par unification de tête, pour que le noyau ne compare jamais de gros termes réduits) ; dans `prop_frame`, **IZFε est cohérente** relativement à la collection (`izfe_consistent`) |
+| `CC.v` | **le choix dénombrable dans V(E)** : l'hypothèse sur le cadre `frame_cc` (CC au niveau du tripos : une relation R(t, i) totale sur les étiquettes ⌜t⌝ de ω a une sous-relation S totale et déterminée, uniformément en I et R) ; la fonction f ≜ {⟨sₜ, X(s)⟩ ∣ ⌜t⌝ ∧ S(t, s)} (`fS`) ; faits méta : un couple de Kuratowski détermine ses composantes (`vop_inj`, par l'appartenance au niveau des arbres, sans injectivité des formes) et sₜ détermine t (`snat_inj`) ; **le schéma CC borné est réalisé** (`R_cc`) |
+| `Sound.v` | **V(E) ⊨ IZFε** (théorème 2.2.2, `ve_sound`) : règles logiques par `FrameTarski`, axiomes par `fax_sound` et la tactique `psolve` (valeur calculée ≡ forme propre, en ne réduisant la valeur que par unification de tête, pour que le noyau ne compare jamais de gros termes réduits) ; dans `prop_frame`, **IZFε est cohérente** relativement à la collection (`izfe_consistent`) ; si le cadre valide CC au niveau du tripos, **V(E) ⊨ IZFε + CC** (`ve_sound_cc`) |
 | `PCAFix.v` | **le point fixe dans toute PCA** : chaque expression de l'opérade a un point fixe (`pfix`, `pfix_spec`), le combinateur de Turing paresseux δδ avec δ := λw.λx. H (w w) x, où H calcule eeval en interne (`qexp`, `lq`) ; Φ = parties de A est petit (Φ₀ := A → Prop) ; d'où **V(A) ⊨ IZFε pour toute PCA sous la seule collection** (`ve_sound_pca`), et la réalisabilité de Kleene pour IZFε (`ve_sound_K1`) |
 
 ## Choix de conception
@@ -758,3 +760,7 @@ Au niveau interne (`Eta.v`, `Composition.v`) : `subst_id`, `subst_subst`,
   grand, et les choisir. Dans `prop_frame` et dans le cadre de toute PCA
   (`VE/PCAFix.v`, dont K1), Φ₀ et le point fixe sont fournis : seule la
   collection reste une hypothèse.
+- Choix dénombrable dans V(E) (`VE/CC.v`) : seule la couche générique est
+  faite (un cadre qui valide CC au niveau du tripos donne V(E) ⊨ IZFε + CC).
+  Le cadre concret à mémoïsation et non-déterminisme (Mem-SCA de
+  Cohen–Faro–Tate), qui valide `frame_cc`, reste à construire.

@@ -21,8 +21,8 @@ From SF.Logic Require Import Judgment Propositional.
 From SF.Functional Require Import Arrow Graded.
 From SF.Quantifiers Require Import Quant Order.
 From SF.Models Require Import PSet Frame Semantics Hyperdoctrine Logic Order FrameModel Tarski FrameTarski.
-From SF.VE Require Import Trees Base ND Real1 Cons Real2 Ind Coll Model Axioms.
-From SF.SetTheory Require Import IZFe.
+From SF.VE Require Import Trees Base ND Real1 Cons Real2 Ind Coll Model Axioms CC.
+From SF.SetTheory Require Import IZFe IZFeCC.
 
 Local Notation ι a := (Spec [] a).
 
@@ -307,6 +307,40 @@ Qed.
 (** Un énoncé clos prouvable dans IZFε est réalisé. *)
 Corollary ve_sound_closed φ : IZFe [] [] φ -> exists e, ftop —[e]→ T0 (sval φ tt).
 Proof. intros Hd. destruct (ve_sound _ _ _ Hd) as [e He]. exists e. apply He. Qed.
+
+(** *** Le choix dénombrable *)
+
+(** Si le cadre valide le choix dénombrable au niveau du tripos
+    ([frame_cc], voir [CC.v]), V(E) réalise IZFε + CC (forme bornée). *)
+Section CCs.
+Context (m : fev F) (Hcc : frame_cc F m).
+
+Lemma s_cc : mrule_sound M (fhd F) ftruth A_cc.
+Proof.
+  eapply ax_real.
+  - destruct (R_cc F m Hcc) as [e He]. exists e. intros δ.
+    exact (He (snd δ tt) (B2 (snd (fst δ))) (B2P (snd (fst δ)))).
+  - intros δ. cbv beta. unfold ccS, ccHyp, ccTot, ccFun, ccSub, CC.vop. psolve.
+Qed.
+
+Definition IZFeCL : logic isym := {| l_calc := C; l_prop := Pr; l_idx := _; l_rules := RIZFeC |}.
+
+Lemma rules_sound_cc i : mrule_sound (L := IZFeCL) M (fhd F) ftruth (l_rules isym IZFeCL i).
+Proof. destruct i as [i|[]]; [apply (rules_sound i)|apply s_cc]. Qed.
+
+(** **V(E) ⊨ IZFε + CC.** *)
+Theorem ve_sound_cc Γ Ξ φ :
+  IZFeC Γ Ξ φ ->
+  exists e, forall γ, fconj F (map (fun χ => T0 (sval χ γ)) Ξ) —[e]→ T0 (sval φ γ).
+Proof.
+  intros Hd. destruct (soundness IZFeCL PSet M (fhd F) ftruth rules_sound_cc Γ Ξ φ Hd) as [e He].
+  exists e. intros γ.
+  apply (fent_proper F _ _ _ _ _
+           (mconj_at F C Pr So' Iy' Hc T0 Himp Hand Hor Htop Hbot Hall Hex Heq Ξ γ)
+           (finterp_at F C Pr So' Iy' Hc T0 φ γ)), He.
+Qed.
+
+End CCs.
 
 End Sound.
 
