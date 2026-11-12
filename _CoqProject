@@ -46,6 +46,7 @@ theories/SetTheory/IZFRepl.v
 theories/SetTheory/IZFRecX.v
 theories/SetTheory/IZFRec.v
 theories/SetTheory/IZFeCC.v
+theories/SetTheory/IZFeDC.v
 theories/Extensions/Conservativity.v
 theories/Extensions/RuleExt.v
 theories/Extensions/Interpretation.v
@@ -110,6 +111,7 @@ theories/VE/Coll.v
 theories/VE/Model.v
 theories/VE/Axioms.v
 theories/VE/CC.v
+theories/VE/DC.v
 theories/VE/Sound.v
 theories/VE/MemSCA.v
 theories/VE/PCAFix.v

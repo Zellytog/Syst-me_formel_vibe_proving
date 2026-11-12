@@ -54,7 +54,7 @@ demande à lui seul **une quinzaine de minutes** sur une machine ordinaire
 et les vérifications de conversion entre instances des gros gabarits
 (celui de rec en particulier) sont coûteuses. `make -j` aide peu, la chaîne
 étant presque linéaire. Le modèle V(E) (`theories/VE/`) compile en une
-cinquantaine de secondes, dont une quarantaine pour `Sound.v` (la vérification de la forme propre du schéma CC en prend la moitié) ; le cadre Mem-SCA (`VE/MemSCA.v`) en demande environ quatre. Les extensions par définition
+minute environ, dont une cinquantaine de secondes pour `Sound.v` (les vérifications de la forme propre des schémas CC et DC en prennent l'essentiel) ; le cadre Mem-SCA (`VE/MemSCA.v`) en demande environ cinq, et la couche DC (`VE/DC.v`) une. Les extensions par définition
 (`Extensions/Definitional.v` et `DefSound.v`) compilent en environ huit
 secondes (deux et six).
 
@@ -144,6 +144,7 @@ dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Fun
 | `IZFRecX.v` | le graphe de rec lu sur un essai f défini en a, de valeur v : z ∈ v ↔ z ∈ rec(a) (`recv_iff`), w = rec(a) ↔ w = v (`eqr_iff`), β ε rec(a) ↔ β ∈ v (`epsr_iff`), et (∃w. w = rec(α) ∧ ψ(w, β)) ↔ R_f(α, β) (`chi_rf`) |
 | `IZFRec.v` | **conservativité, étape 3 : IZFε tout entier est conservative sur IZF** (`izfe_sound`, `izfe_conservative`, `izfe_conservative_closed`, théorème 1.5.13). Dans l'axiome de rec, ψ est appliquée au terme rec(α) : on passe par une variante (`ArecV`) où ψ(rec α, β) devient ∃w. w = rec(α) ∧ ψ(w, β), qui entraîne l'axiome en logique pure (`rec_var`, avec `eqL` et la monotonie de ∃!, `exu_mono`) et dont la traduction est l'instance d'un gabarit de IZF (`sch_rec`, `tmpl_rec`). Aucun axiome |
 | `IZFeCC.v` | **IZFε + le choix dénombrable** (forme bornée) : le schéma `A_cc`, à paramètres X et φ, (∀n. n ε ω ⇒ ∃y. y ε X ∧ φ(n, y)) ⇒ ∃f. (∀n. n ε ω ⇒ ∃y. y ε X ∧ ⟨n, y⟩ ε f ∧ φ(n, y)) ∧ (f fonctionnelle) ∧ (f ⊆ ω × X) ; la théorie `RIZFeC` |
+| `IZFeDC.v` | **IZFε + le choix dépendant** (forme bornée) : le schéma `A_dc`, à paramètres X et φ, (∀x. x ε X ⇒ ∃y. y ε X ∧ φ(x, y)) ⇒ ∀x₀. x₀ ε X ⇒ ∃f. (∀n. n ε ω ⇒ ∃y. y ε X ∧ ⟨n, y⟩ ε f) ∧ (f fonctionnelle) ∧ (f ⊆ ω × X) ∧ ⟨∅, x₀⟩ ε f ∧ (∀n y y'. ⟨n, y⟩ ε f ⇒ ⟨S(n), y'⟩ ε f ⇒ φ(y, y')) ; la théorie `RIZFeD` |
 
 ### `theories/Extensions/` : extensions et conservativité
 
@@ -249,9 +250,10 @@ ce qui évite toute extensionnalité fonctionnelle.
 | `Model.v` | l'interprétation des sortes (V ↦ `Vset`, Pr ↦ Φ) et des symboles de IZFε ; les lieurs reçoivent des morphismes de setoïdes (`b1`, `b2`) |
 | `Axioms.v` | chaque axiome de IZF⁻ε et de IZFε, sous forme sémantique « propre », est réalisé uniformément (`R_mem`, …, `R_rec`, `R_power_sub`) |
 | `CC.v` | **le choix dénombrable dans V(E)** : l'hypothèse sur le cadre `frame_cc` (CC au niveau du tripos : une relation R(t, i) totale sur les étiquettes ⌜t⌝ de ω a une sous-relation S totale et déterminée, uniformément en I et R) ; la fonction f ≜ {⟨sₜ, X(s)⟩ ∣ ⌜t⌝ ∧ S(t, s)} (`fS`) ; faits méta : un couple de Kuratowski détermine ses composantes (`vop_inj`, par l'appartenance au niveau des arbres, sans injectivité des formes) et sₜ détermine t (`snat_inj`) ; **le schéma CC borné est réalisé** (`R_cc`) |
-| `Sound.v` | **V(E) ⊨ IZFε** (théorème 2.2.2, `ve_sound`) : règles logiques par `FrameTarski`, axiomes par `fax_sound` et la tactique `psolve` (valeur calculée ≡ forme propre, en ne réduisant la valeur que par unification de tête, pour que le noyau ne compare jamais de gros termes réduits) ; dans `prop_frame`, **IZFε est cohérente** relativement à la collection (`izfe_consistent`) ; si le cadre valide CC au niveau du tripos, **V(E) ⊨ IZFε + CC** (`ve_sound_cc`) |
+| `DC.v` | **le choix dépendant dans V(E)** : l'hypothèse sur le cadre `frame_dc` (DC au niveau du tripos : d'un départ ⋁ᵢ A(i) ∧ P₀(i) et d'une relation totale ⋀ᵢ A(i) ⇒ ⋁ⱼ A(j) ∧ R(i, j), une suite S(t, i) totale, déterminée, dans A, issue de P₀ et qui suit R, uniformément en I, A, P₀, R) ; la suite est la même `fS` que pour CC, le pas utilise S(sₜ) = sₜ₊₁ et `snat_inj` ; **le schéma DC borné est réalisé** (`R_dc`) |
+| `Sound.v` | **V(E) ⊨ IZFε** (théorème 2.2.2, `ve_sound`) : règles logiques par `FrameTarski`, axiomes par `fax_sound` et la tactique `psolve` (valeur calculée ≡ forme propre, en ne réduisant la valeur que par unification de tête, pour que le noyau ne compare jamais de gros termes réduits) ; dans `prop_frame`, **IZFε est cohérente** relativement à la collection (`izfe_consistent`) ; si le cadre valide CC au niveau du tripos, **V(E) ⊨ IZFε + CC** (`ve_sound_cc`) ; de même pour DC (`ve_sound_dc`) |
 | `PCAFix.v` | **le point fixe dans toute PCA** : chaque expression de l'opérade a un point fixe (`pfix`, `pfix_spec`), le combinateur de Turing paresseux δδ avec δ := λw.λx. H (w w) x, où H calcule eeval en interne (`qexp`, `lq`) ; Φ = parties de A est petit (Φ₀ := A → Prop) ; d'où **V(A) ⊨ IZFε pour toute PCA sous la seule collection** (`ve_sound_pca`), et la réalisabilité de Kleene pour IZFε (`ve_sound_K1`) |
-| `MemSCA.v` | **le cadre Mem-SCA** (Cohen–Faro–Tate) : un langage de combinateurs catégoriques avec **non-déterminisme** (`cNd`), **état** (table d'allocation, table de mémoïsation) et **mémoïsation** (`cMemo`, `cLook ℓ`), sémantique à grands pas `ev`, terminaison sur toutes les branches `safe` (inductive), états atteignables `reach` ; propositions = prédicats stables par les futurs (extensions de l'état) ; le cadre `MF` ; ⊥ n'est pas réalisé (`progress`, `not_top_bot`) ; décodage déterministe des entiers ⌜t⌝ (`m_dec`) ; invariant de la table (`reach_inv` : toute entrée est un résultat effectif du générateur) ; **la mémoïsation réalise CC au niveau du tripos** (`m_memo`, `memo_cc : frame_cc MF cCC`), sous la seule hypothèse méta `CC_N` (choix sur les parties de ℕ), via un codage injectif des entrées dans ℕ (`enc_x_inj`, sans axiome) ; Φ₀ := état → code → Prop, point fixe `cFix` ; d'où **V(Mem) ⊨ IZFε + CC** (`ve_mem_cc`) et la cohérence de IZFε + CC (`izfe_cc_consistent`), relativement à `CC_N` et à la collection |
+| `MemSCA.v` | **le cadre Mem-SCA** (Cohen–Faro–Tate) : un langage de combinateurs catégoriques avec **non-déterminisme** (`cNd`), **état** (table d'allocation, table de mémoïsation) et **mémoïsation** (`cMemo`, `cLook ℓ`), sémantique à grands pas `ev`, terminaison sur toutes les branches `safe` (inductive), états atteignables `reach` ; propositions = prédicats stables par les futurs (extensions de l'état) ; le cadre `MF` ; ⊥ n'est pas réalisé (`progress`, `not_top_bot`) ; décodage déterministe des entiers ⌜t⌝ (`m_dec`) ; invariant de la table (`reach_inv` : toute entrée est un résultat effectif du générateur) ; **la mémoïsation réalise CC au niveau du tripos** (`m_memo`, `memo_cc : frame_cc MF cCC`), sous la seule hypothèse méta `CC_N` (choix sur les parties de ℕ), via un codage injectif des entrées dans ℕ (`enc_x_inj`, sans axiome) ; Φ₀ := état → code → Prop, point fixe `cFix` ; d'où **V(Mem) ⊨ IZFε + CC** (`ve_mem_cc`) et la cohérence de IZFε + CC (`izfe_cc_consistent`), relativement à `CC_N` et à la collection ; **le choix dépendant par mémoïsation récursive** (`cMemoR` : le générateur reçoit sa propre case ; `cCase` : analyse de cas sur un numéral) : spécification du générateur (`m_gen`), totalité de `cLook ℓ` par récurrence sur t (`look_tot`), la suite lue dans la table suit R (`Sd_step`), `memo_dc : frame_dc MF cDC` sous `CC_N` et `DC_N` (le choix dépendant méta), d'où **V(Mem) ⊨ IZFε + DC** (`ve_mem_dc`) et la cohérence de IZFε + DC (`izfe_dc_consistent`) |
 
 ## Choix de conception
 
@@ -551,6 +553,21 @@ Les quatre instances sont prouvées **sans axiome** (`Print Assumptions`).
   Les ⋀ sont gelés (`cGen` e := λc. λ⊤. e · c), sans quoi ⋀∅ = ⊤
   exigerait la terminaison de e.
 
+- **Le choix dépendant par mémoïsation récursive.** Le générateur de la
+  case ℓ reçoit `cLook ℓ` (primitive `cMemoR`) : l'entrée 0 est le départ,
+  l'entrée t + 1 est h · a, où a est la première composante de l'entrée t,
+  *lue dans la table*. Une issue de `cLook ℓ` · ⌜t⌝ étant toujours la
+  première entrée (ℓ, t) de l'état d'arrivée, la suite est figée sur chaque
+  branche et chaque entrée suit la précédente. La totalité de `cLook ℓ` se
+  prouve par récurrence sur t (`look_tot`), la spécification du générateur
+  au rang t + 1 utilisant la totalité au rang t (`m_gen`). Les indices se
+  choisissent niveau par niveau : celui de l'entrée t + 1 doit vérifier
+  R(i, ·), où i est l'indice choisi pour l'entrée t, élément de I et non
+  entier ; on ne peut donc plus choisir entrée par entrée sur un domaine
+  dénombrable. On choisit une suite de fonctions de choix (une par
+  niveau, chacune compatible avec la précédente) par le choix dépendant
+  méta `DC_N`, chaque pas étant un choix dénombrable (`CC_N`).
+
 ## HA et le système libre (`HA/`)
 
 - **HA sans axiome arithmétique.** La récurrence n'est pas une règle de
@@ -718,8 +735,9 @@ Au niveau interne (`Eta.v`, `Composition.v`) : `subst_id`, `subst_subst`,
   la relativisation à D_N (`HA/Model.v`).
 - En dehors des cohérences obtenues par un modèle (l'arithmétique d'ordre
   (1,1) de l'exemple, HA_ω^{ω,ω} dans `HA/Model.v`, relativement à
-  l'imprédicativité de `Prop`, et IZFε dans `VE/Sound.v`, relativement en
-  plus à la collection), aucun résultat de cohérence ou de
+  l'imprédicativité de `Prop`, IZFε dans `VE/Sound.v`, relativement en
+  plus à la collection, et IZFε + CC, IZFε + DC dans `VE/MemSCA.v`,
+  relativement en plus au choix méta), aucun résultat de cohérence ou de
   normalisation n'est prouvé. En particulier, rien n'est
   prouvé sur la terminaison des systèmes engendrés.
 - Pour HA, la famille de relativisation D est **définie** sur la signature
@@ -781,12 +799,16 @@ Au niveau interne (`Eta.v`, `Composition.v`) : `subst_id`, `subst_subst`,
   grand, et les choisir. Dans `prop_frame` et dans le cadre de toute PCA
   (`VE/PCAFix.v`, dont K1), Φ₀ et le point fixe sont fournis : seule la
   collection reste une hypothèse.
-- Choix dénombrable dans V(E) (`VE/CC.v`, `VE/MemSCA.v`) : le cadre Mem-SCA
-  valide `frame_cc` sous l'hypothèse méta `CC_N` (choix sur les parties de
-  ℕ, à valeurs dans un type quelconque), qui est la seule hypothèse
-  méta-théorique ; la collection reste, comme pour toute instance de V(E),
+- Choix dénombrable et dépendant dans V(E) (`VE/CC.v`, `VE/DC.v`,
+  `VE/MemSCA.v`) : le cadre Mem-SCA valide `frame_cc` sous l'hypothèse méta
+  `CC_N` (choix sur les parties de ℕ, à valeurs dans un type quelconque),
+  et `frame_dc` sous `CC_N` et `DC_N` (le choix dépendant méta, pour une
+  relation indexée par l'étape) ; ce sont les seules hypothèses
+  méta-théoriques, et `DC_N` n'est pas dérivé de `CC_N` ni l'inverse (en
+  ZF, DC entraîne CC, mais la preuve usuelle n'est pas constructive) ; la collection reste, comme pour toute instance de V(E),
   une hypothèse. Le décodage des entiers (`cDec`), le codage canonique
-  (`cCan`) et les constantes (`cCst`) sont des primitives du langage plutôt
+  (`cCan`), les constantes (`cCst`), la mémoïsation récursive (`cMemoR`)
+  et l'analyse de cas (`cCase`) sont des primitives du langage plutôt
   que des termes définis par récursion, et la sémantique ne fixe pas de
   stratégie d'allocation au-delà de « la case ℓ est la position de son
   entrée ».

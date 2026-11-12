@@ -21,8 +21,8 @@ From SF.Logic Require Import Judgment Propositional.
 From SF.Functional Require Import Arrow Graded.
 From SF.Quantifiers Require Import Quant Order.
 From SF.Models Require Import PSet Frame Semantics Hyperdoctrine Logic Order FrameModel Tarski FrameTarski.
-From SF.VE Require Import Trees Base ND Real1 Cons Real2 Ind Coll Model Axioms CC.
-From SF.SetTheory Require Import IZFe IZFeCC.
+From SF.VE Require Import Trees Base ND Real1 Cons Real2 Ind Coll Model Axioms CC DC.
+From SF.SetTheory Require Import IZFe IZFeCC IZFeDC.
 
 Local Notation ι a := (Spec [] a).
 
@@ -341,6 +341,40 @@ Proof.
 Qed.
 
 End CCs.
+
+(** *** Le choix dépendant *)
+
+(** Si le cadre valide DC au niveau du tripos ([frame_dc], voir [DC.v]),
+    V(E) réalise IZFε + DC (forme bornée). *)
+Section DCs.
+Context (m : fev F) (Hdc : frame_dc F m).
+
+Lemma s_dc : mrule_sound M (fhd F) ftruth A_dc.
+Proof.
+  eapply ax_real.
+  - destruct (R_dc F m Hdc) as [e He]. exists e. intros δ.
+    exact (He (snd δ tt) (B2 (snd (fst δ))) (B2P (snd (fst δ)))).
+  - intros δ. cbv beta. unfold dcS, dcHyp, dcTot, dcStart, dcStep, ccFun, ccSub, CC.vop. psolve.
+Qed.
+
+Definition IZFeDL : logic isym := {| l_calc := C; l_prop := Pr; l_idx := _; l_rules := RIZFeD |}.
+
+Lemma rules_sound_dc i : mrule_sound (L := IZFeDL) M (fhd F) ftruth (l_rules isym IZFeDL i).
+Proof. destruct i as [i|[]]; [apply (rules_sound i)|apply s_dc]. Qed.
+
+(** **V(E) ⊨ IZFε + DC.** *)
+Theorem ve_sound_dc Γ Ξ φ :
+  IZFeD Γ Ξ φ ->
+  exists e, forall γ, fconj F (map (fun χ => T0 (sval χ γ)) Ξ) —[e]→ T0 (sval φ γ).
+Proof.
+  intros Hd. destruct (soundness IZFeDL PSet M (fhd F) ftruth rules_sound_dc Γ Ξ φ Hd) as [e He].
+  exists e. intros γ.
+  apply (fent_proper F _ _ _ _ _
+           (mconj_at F C Pr So' Iy' Hc T0 Himp Hand Hor Htop Hbot Hall Hex Heq Ξ γ)
+           (finterp_at F C Pr So' Iy' Hc T0 φ γ)), He.
+Qed.
+
+End DCs.
 
 End Sound.
 
