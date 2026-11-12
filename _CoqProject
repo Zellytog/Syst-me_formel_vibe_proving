@@ -111,4 +111,5 @@ theories/VE/Model.v
 theories/VE/Axioms.v
 theories/VE/CC.v
 theories/VE/Sound.v
+theories/VE/MemSCA.v
 theories/VE/PCAFix.v
