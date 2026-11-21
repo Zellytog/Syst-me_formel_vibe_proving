@@ -51,7 +51,7 @@ demande à lui seul **une vingtaine de minutes** sur une machine ordinaire
 (compilation séquentielle) : `IZFSound.v`, `IZFSchema.v`, `IZFCons.v`,
 `IZFRepl.v`, `IZFRecW.v`, `IZFRecX.v` et `IZFRec.v` prennent chacun de une
 à trois minutes, et CC et DC dans IZF (`IZFChoice*.v`) environ quatre minutes
-de plus (`IZFChoice2.v` et `IZFChoice4.v` près de deux chacun). Les dérivations y sont faites dans la syntaxe profonde,
+de plus (`IZFChoice2.v` et `IZFChoice4.v` près de deux chacun). La récursion de Knaster–Tarski (`IZFKT.v`) prend près de deux minutes. Les dérivations y sont faites dans la syntaxe profonde,
 et les vérifications de conversion entre instances des gros gabarits
 (celui de rec en particulier) sont coûteuses. `make -j` aide peu, la chaîne
 étant presque linéaire. Le modèle V(E) (`theories/VE/`) compile en une
@@ -151,6 +151,7 @@ dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Fun
 | `IZFChoice3.v` | **IZFε + CC prouve le choix dénombrable de IZF** (`izf_cc`, puis `izf_cc_lizf` pour toute formule de L_IZF avec paramètres) ; `ExtR2` pour les formules de L_IZF (`extR2_inst`) |
 | `IZFChoice4.v` | **DC de IZF**, énoncé dans L_IZF (`IZF_dc` : départ ⟨∅, x₀⟩ ∈ f, pas Succ(m, n) ∧ ⟨n, y⟩ ∈ f ∧ ⟨m, y′⟩ ∈ f ⇒ φ(y, y′)) ; congruence de Succ (`succ_congr`) ; les composantes (`dchyp_l`, `dc_tot_l`, `dc_start_l`, `dc_step_l` : n₁ ≃ S(n₀) donne n₁ = S(n₀) par `nat_leib`) |
 | `IZFChoice5.v` | **IZFε + DC prouve le choix dépendant de IZF** (`izf_dc`, `izf_dc_lizf`) |
+| `IZFKT.v` | **récursion sur ℕ par Knaster–Tarski, dans IZF⁻ε** (sans remplacement ni rec) : pour a ε B et g : B → B (métavariable de terme [V] → V), il existe L avec ⟨∅, a⟩ ε L, clos par ⟨n, y⟩ ↦ ⟨S n, g(y)⟩, total sur ω, fonctionnel pour l'égalité de Leibniz et inclus dans ω × B (`kt_rec`) ; L est le plus petit point fixe, {z ε A ∣ ∀X ε P(A). Cl(X) → z ε X}, avec A ⊇ ω × B obtenu par collection ; principe d'induction par le faible powerset (`lfp_ind`), clôture (`clos_start`, `clos_step`), inversion (`inv_L`, `inv2`), totalité et fonctionnalité par ε-induction (`tot_L`, `fun_L`), injectivité de Leibniz du couple et du successeur (`opair_inj1`, `opair_inj2`, `suc_inj`). Justifie le remplacement de rec par cette construction dans les notes : IZFε sans rec est `RIZFr` |
 
 ### `theories/Extensions/` : extensions et conservativité
 
@@ -807,7 +808,10 @@ Au niveau interne (`Eta.v`, `Composition.v`) : `subst_id`, `subst_subst`,
   de 1.5.12, rendue totale de la même façon : la valeur en b est toujours
   l'ensemble de remplacement total, qui existe sans hypothèse), si bien
   que son graphe est total et fonctionnel sans hypothèse sur φ et ψ.
-  Reste la section 1.4. La
+  La récursion sur ℕ de 1.4.6 se fait sans rec, par Knaster–Tarski
+  (`IZFKT.v`) : rec peut donc être retiré de la théorie, qui devient
+  `RIZFr`, et son ajout reste une extension conservative. Le reste
+  de la section 1.4 n'est pas formalisé. La
   traduction ne porte que sur les contextes
   d'ensembles, et IZF n'est relié à `IZFeIZF.v` (1.5.9) que par la lecture
   des axiomes, pas par une traduction formelle.

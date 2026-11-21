@@ -30,6 +30,7 @@ theories/SetTheory/Examples.v
 theories/SetTheory/IZFe.v
 theories/SetTheory/IZFeBasic.v
 theories/SetTheory/IZFeExt.v
+theories/SetTheory/IZFKT.v
 theories/SetTheory/IZFeIZF.v
 theories/SetTheory/IZF.v
 theories/SetTheory/IZFTr.v
