@@ -63,7 +63,7 @@ secondes (deux et six).
 
 Le développement est découpé en couches, chacune dans son dossier et
 n'important que les couches inférieures. Les chemins logiques suivent les
-dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Functional.Arrow`, `SF.Quantifiers.Order`, `SF.Arithmetic.Arith`, `SF.SetTheory.Sets`, `SF.Extensions.Conservativity`, `SF.Models.Logic`, `SF.HA.Translation`, `SF.Fan.FT`, `SF.VE.Sound`.
+dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Functional.Arrow`, `SF.Quantifiers.Order`, `SF.Arithmetic.Arith`, `SF.SetTheory.Sets`, `SF.Extensions.Conservativity`, `SF.Models.Logic`, `SF.HA.Translation`, `SF.Fan.FT`, `SF.VE.Sound`, `SF.Checker.Raw`.
 
 ### `theories/Syntax/` : la syntaxe
 
@@ -262,6 +262,24 @@ ce qui évite toute extensionnalité fonctionnelle.
 | `PCAFix.v` | **le point fixe dans toute PCA** : chaque expression de l'opérade a un point fixe (`pfix`, `pfix_spec`), le combinateur de Turing paresseux δδ avec δ := λw.λx. H (w w) x, où H calcule eeval en interne (`qexp`, `lq`) ; Φ = parties de A est petit (Φ₀ := A → Prop) ; d'où **V(A) ⊨ IZFε pour toute PCA sous la seule collection** (`ve_sound_pca`), et la réalisabilité de Kleene pour IZFε (`ve_sound_K1`) |
 | `MemSCA.v` | **le cadre Mem-SCA** (Cohen–Faro–Tate) : un langage de combinateurs catégoriques avec **non-déterminisme** (`cNd`), **état** (table d'allocation, table de mémoïsation) et **mémoïsation** (`cMemo`, `cLook ℓ`), sémantique à grands pas `ev`, terminaison sur toutes les branches `safe` (inductive), états atteignables `reach` ; propositions = prédicats stables par les futurs (extensions de l'état) ; le cadre `MF` ; ⊥ n'est pas réalisé (`progress`, `not_top_bot`) ; décodage déterministe des entiers ⌜t⌝ (`m_dec`) ; invariant de la table (`reach_inv` : toute entrée est un résultat effectif du générateur) ; **la mémoïsation réalise CC au niveau du tripos** (`m_memo`, `memo_cc : frame_cc MF cCC`), sous la seule hypothèse méta `CC_N` (choix sur les parties de ℕ), via un codage injectif des entrées dans ℕ (`enc_x_inj`, sans axiome) ; Φ₀ := état → code → Prop, point fixe `cFix` ; d'où **V(Mem) ⊨ IZFε + CC** (`ve_mem_cc`) et la cohérence de IZFε + CC (`izfe_cc_consistent`), relativement à `CC_N` et à la collection ; **le choix dépendant par mémoïsation récursive** (`cMemoR` : le générateur reçoit sa propre case ; `cCase` : analyse de cas sur un numéral) : spécification du générateur (`m_gen`), totalité de `cLook ℓ` par récurrence sur t (`look_tot`), la suite lue dans la table suit R (`Sd_step`), `memo_dc : frame_dc MF cDC` sous `CC_N` et `DC_N` (le choix dépendant méta), d'où **V(Mem) ⊨ IZFε + DC** (`ve_mem_dc`) et la cohérence de IZFε + DC (`izfe_dc_consistent`) |
 | `MemIZF.v` | **CC et DC de IZF dans V(Mem)** : pour toute formule de L_IZF, le choix dénombrable (`ve_mem_izf_cc`, sous `CC_N`) et le choix dépendant (`ve_mem_izf_dc`, sous `CC_N` et `DC_N`) de IZF, énoncés dans L_IZF, sont réalisés |
+
+### `theories/Checker/` : vers un vérificateur certifié (en cours)
+
+Objectif : un mini-assistant de preuve pour les systèmes logiques de ce
+formalisme. Un front-end en OCaml produit des objets de preuve explicites ;
+un vérificateur écrit en Rocq, prouvé correct et extrait, les vérifie. Le
+même vérificateur, exécuté dans Rocq par `vm_compute`, transforme une preuve
+acceptée en un théorème Rocq « Théorie ⊢ énoncé » (preuve par réflexion).
+Feuille de route : syntaxe brute et élaboration (fait) ; vérificateur de
+dérivations avec certificats de conversion et théorème de correction ;
+format de description des théories, conditions de bord sur les schémas
+(pour les sous-systèmes de l'arithmétique du second ordre) ; front-end ;
+élaboration et tactiques ; bibliothèque de mathématiques à rebours.
+
+| Fichier | Contenu |
+|---|---|
+| `Raw.v` | **termes bruts** (`rtm`, `rargs` : indices de de Bruijn entiers, symboles dans un type quelconque, sans types dépendants) ; signature brute (`rspec`, `rsym_of`) ; **élaboration** `elab Γ t : option {s & tm Γ s}` (recherche typée des variables `lookup`, vérification des arités et des sortes des arguments), version booléenne `check` et `realize` (un terme brut accepté désigne un terme intrinsèque) ; **effacement** `erase` ; **aller-retour** : `elab_erase` (complétude, d'où `check_erase`) et `erase_elab` (adéquation). Aucun axiome : l'unicité des preuves d'égalité entre sortes vient de leur décidabilité |
+| `RawExamples.v` | la syntaxe brute du λ-calcul ; vérifications par `vm_compute` (λx. x bien formé, variable libre et mauvaise arité rejetées) ; aller-retour sur le membre gauche de β |
 
 ## Choix de conception
 

@@ -122,3 +122,5 @@ theories/VE/Sound.v
 theories/VE/MemSCA.v
 theories/VE/MemIZF.v
 theories/VE/PCAFix.v
+theories/Checker/Raw.v
+theories/Checker/RawExamples.v
