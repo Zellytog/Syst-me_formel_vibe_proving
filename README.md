@@ -271,7 +271,8 @@ un vérificateur écrit en Rocq, prouvé correct et extrait, les vérifie. Le
 même vérificateur, exécuté dans Rocq par `vm_compute`, transforme une preuve
 acceptée en un théorème Rocq « Théorie ⊢ énoncé » (preuve par réflexion).
 Feuille de route : syntaxe brute et élaboration (fait) ; vérificateur de
-dérivations avec certificats de conversion et théorème de correction ;
+dérivations et théorème de correction (fait, conversions par une interface
+abstraite) ; certificats de réécriture pour les conversions ;
 format de description des théories, conditions de bord sur les schémas
 (pour les sous-systèmes de l'arithmétique du second ordre) ; front-end ;
 élaboration et tactiques ; bibliothèque de mathématiques à rebours.
@@ -280,6 +281,8 @@ format de description des théories, conditions de bord sur les schémas
 |---|---|
 | `Raw.v` | **termes bruts** (`rtm`, `rargs` : indices de de Bruijn entiers, symboles dans un type quelconque, sans types dépendants) ; signature brute (`rspec`, `rsym_of`) ; **élaboration** `elab Γ t : option {s & tm Γ s}` (recherche typée des variables `lookup`, vérification des arités et des sortes des arguments), version booléenne `check` et `realize` (un terme brut accepté désigne un terme intrinsèque) ; **effacement** `erase` ; **aller-retour** : `elab_erase` (complétude, d'où `check_erase`) et `erase_elab` (adéquation). Aucun axiome : l'unicité des preuves d'égalité entre sortes vient de leur décidabilité |
 | `RawExamples.v` | la syntaxe brute du λ-calcul ; vérifications par `vm_compute` (λx. x bien formé, variable libre et mauvaise arité rejetées) ; aller-retour sur le membre gauche de β |
+| `Check.v` | **le vérificateur de dérivations** : règles brutes (`rrule` : métavariables, prémisses `rpremise` avec extension du contexte et hypothèses, conclusion), de la même forme que `drule` ; **preuves brutes** (`rproof` : `pax n`, la n-ième hypothèse ; `pconv c ψ π`, conversion avec certificat ; `prule i v ps`, règle i instanciée par le vecteur brut v, une sous-preuve par prémisse) ; élaboration des formules et des règles (`elab_form`, `elab_rule`) ; la famille intrinsèque `Rfam` des élaborations des règles brutes ; égalité des formules par effacement (`form_eqb`, injectivité de `erase`) ; le vérificateur `chk`, qui instancie les prémisses par la substitution héréditaire intrinsèque ; **correction** `chk_sound : chk Γ Ξ φ π = true → deriv C P Rfam Γ Ξ φ`, et `check_judgment_sound` pour un jugement donné en brut. Les conversions passent par une interface (type de certificats, vérification correcte pour C). Aucun axiome |
+| `CheckExamples.v` | l'implication intuitionniste comme théorie brute : ⊢ A ⇒ (B ⇒ A) vérifié par `vm_compute` et transformé en `deriv` (`K_deriv`), preuve fausse rejetée ; un fragment du premier ordre avec ∀I (variable propre, métavariable φ : [D] → P) et ∀E : ⊢ ∀x. Q(x) ⇒ Q(x) et ∀x. Q(x) ⊢ Q(c) acceptés, Q(c) ⊢ ∀x. Q(x) rejeté (contrôle de la variable propre) |
 
 ## Choix de conception
 

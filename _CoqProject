@@ -124,3 +124,5 @@ theories/VE/MemIZF.v
 theories/VE/PCAFix.v
 theories/Checker/Raw.v
 theories/Checker/RawExamples.v
+theories/Checker/Check.v
+theories/Checker/CheckExamples.v
