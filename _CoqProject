@@ -126,3 +126,5 @@ theories/Checker/Raw.v
 theories/Checker/RawExamples.v
 theories/Checker/Check.v
 theories/Checker/CheckExamples.v
+theories/Free/Free.v
+theories/Free/Examples.v

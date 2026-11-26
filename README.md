@@ -63,7 +63,7 @@ secondes (deux et six).
 
 Le développement est découpé en couches, chacune dans son dossier et
 n'important que les couches inférieures. Les chemins logiques suivent les
-dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Functional.Arrow`, `SF.Quantifiers.Order`, `SF.Arithmetic.Arith`, `SF.SetTheory.Sets`, `SF.Extensions.Conservativity`, `SF.Models.Logic`, `SF.HA.Translation`, `SF.Fan.FT`, `SF.VE.Sound`, `SF.Checker.Raw`.
+dossiers : `SF.Syntax.Terms`, `SF.Calculus.System`, `SF.Logic.Judgment`, `SF.Functional.Arrow`, `SF.Quantifiers.Order`, `SF.Arithmetic.Arith`, `SF.SetTheory.Sets`, `SF.Extensions.Conservativity`, `SF.Models.Logic`, `SF.HA.Translation`, `SF.Fan.FT`, `SF.VE.Sound`, `SF.Free.Free`, `SF.Checker.Raw`.
 
 ### `theories/Syntax/` : la syntaxe
 
@@ -262,6 +262,13 @@ ce qui évite toute extensionnalité fonctionnelle.
 | `PCAFix.v` | **le point fixe dans toute PCA** : chaque expression de l'opérade a un point fixe (`pfix`, `pfix_spec`), le combinateur de Turing paresseux δδ avec δ := λw.λx. H (w w) x, où H calcule eeval en interne (`qexp`, `lq`) ; Φ = parties de A est petit (Φ₀ := A → Prop) ; d'où **V(A) ⊨ IZFε pour toute PCA sous la seule collection** (`ve_sound_pca`), et la réalisabilité de Kleene pour IZFε (`ve_sound_K1`) |
 | `MemSCA.v` | **le cadre Mem-SCA** (Cohen–Faro–Tate) : un langage de combinateurs catégoriques avec **non-déterminisme** (`cNd`), **état** (table d'allocation, table de mémoïsation) et **mémoïsation** (`cMemo`, `cLook ℓ`), sémantique à grands pas `ev`, terminaison sur toutes les branches `safe` (inductive), états atteignables `reach` ; propositions = prédicats stables par les futurs (extensions de l'état) ; le cadre `MF` ; ⊥ n'est pas réalisé (`progress`, `not_top_bot`) ; décodage déterministe des entiers ⌜t⌝ (`m_dec`) ; invariant de la table (`reach_inv` : toute entrée est un résultat effectif du générateur) ; **la mémoïsation réalise CC au niveau du tripos** (`m_memo`, `memo_cc : frame_cc MF cCC`), sous la seule hypothèse méta `CC_N` (choix sur les parties de ℕ), via un codage injectif des entrées dans ℕ (`enc_x_inj`, sans axiome) ; Φ₀ := état → code → Prop, point fixe `cFix` ; d'où **V(Mem) ⊨ IZFε + CC** (`ve_mem_cc`) et la cohérence de IZFε + CC (`izfe_cc_consistent`), relativement à `CC_N` et à la collection ; **le choix dépendant par mémoïsation récursive** (`cMemoR` : le générateur reçoit sa propre case ; `cCase` : analyse de cas sur un numéral) : spécification du générateur (`m_gen`), totalité de `cLook ℓ` par récurrence sur t (`look_tot`), la suite lue dans la table suit R (`Sd_step`), `memo_dc : frame_dc MF cDC` sous `CC_N` et `DC_N` (le choix dépendant méta), d'où **V(Mem) ⊨ IZFε + DC** (`ve_mem_dc`) et la cohérence de IZFε + DC (`izfe_dc_consistent`) |
 | `MemIZF.v` | **CC et DC de IZF dans V(Mem)** : pour toute formule de L_IZF, le choix dénombrable (`ve_mem_izf_cc`, sous `CC_N`) et le choix dépendant (`ve_mem_izf_dc`, sous `CC_N` et `DC_N`) de IZF, énoncés dans L_IZF, sont réalisés |
+
+### `theories/Free/` : le système libre engendré par une signature
+
+| Fichier | Contenu |
+|---|---|
+| `Free.v` | pour un type `S` de sortes de base, des bornes (n, p) et une famille `K` de constantes : les types simples sur S et O (`fty`, grades `tgr`, sortes de base de grade (0,0)) restreints à ceux dont le grade est sous (n, p) (`srt`, appartenance booléenne `inb`) ; la signature `fsym` (λ et app pour toutes les flèches présentes, connecteurs, ∀, ∃, = pour toutes les sortes quantifiables, constantes de K) ; les instances `Functional`, `Graded`, **`Bounded n p`**, `PropGrade`, connecteurs, `Quantifiers n p` ; le **système libre** `Free` (calcul β, logique intuitionniste d'ordre (n, p), aucun axiome) et sa version classique `FreeC` ; `Theory CR DR`, qui ajoute des règles de calcul et de déduction, et `free_in_theory` ; le cas **(ω,ω)** (`osort`, `Free_omega`, `FreeC_omega`), où toute sorte est quantifiable (`o_quantifiable`) |
+| `Examples.v` | une sorte ι, une constante c et une relation R ; en (ω,ω) : ⊢ ∀x. x = x, ⊢ ∀P : ι → O. ∀x. P(x) ⇒ P(x) (quantification sur les prédicats), (λx. R x x) c ⊢ R c c par β ; à l'ordre (1,1), ι → O est une sorte non quantifiable et (ι → O) → O n'est pas une sorte |
 
 ### `theories/Checker/` : vers un vérificateur certifié (en cours)
 
